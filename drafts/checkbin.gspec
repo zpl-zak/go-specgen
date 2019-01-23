@@ -1,0 +1,42 @@
+package mafia_checkbin
+
+/*
+	@enum EPointType::
+		-> Pedestrian = 0x1;
+		-> AI = 0x2;
+		-> Vehicle = 0x4;
+		-> TramStation = 0x8;
+		-> Special = 0x10;
+*/
+
+/*
+	@enum ELinkType::
+		-> Pedestrian = 1;
+		-> AI = 2;
+		-> TrainsAndSalinas_Forward = 4;
+		-> TrainsAndSalinas_Reverse = 0x8400;
+		-> Other = 0x1000;
+*/
+
+type Header struct {
+	Magic      uint32 // Should be 0x1ABCEDF
+	PointCount uint32 // Number of points
+}
+
+type Point struct {
+	Position              Vector3
+	Type                  EPointType
+	ID                    uint16
+	Unk                   [10]uint8 /* @plain Unknown values */
+	EnterLinks, ExitLinks uint8
+}
+
+type Link struct {
+	TargetPoint uint16
+	LinkType    ELinkType
+	Unk         float32
+}
+
+type Vector3 struct {
+	x, y, z float32
+}
