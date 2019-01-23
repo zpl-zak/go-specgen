@@ -1,0 +1,8 @@
+package enums
+
+/*
+	@enum TestEnum::
+		-> Foo = 1,
+		-> Bar = (1 << 20),
+		-> Baz = 0x434343;
+*/

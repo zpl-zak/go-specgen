@@ -33,6 +33,18 @@ type Field struct {
 	DocString string `json:"_doc"`
 }
 
+// EnumField describes enum value
+type EnumField struct {
+	Value     string `json:"value"`
+	DocString string `json:"_doc"`
+}
+
+// Enum describes enumeration
+type Enum struct {
+	Name   string      `json:"name"`
+	Fields []EnumField `json:"fields"`
+}
+
 // Spec describes our structured data
 type Spec struct {
 	Name      string  `json:"name"`
@@ -44,13 +56,14 @@ type Spec struct {
 // Context contains all processed specs
 type Context struct {
 	Specs []Spec `json:"specs"`
-	// TODO(zaklaus): Methods
+	Enums []Enum `json:"enums"`
 }
 
 // ParseFile processes the provided gspec file
 func ParseFile(filePath string) (Context, error) {
 	ctx := Context{
 		Specs: []Spec{},
+		Enums: []Enum{},
 	}
 
 	fstFile := token.NewFileSet()
@@ -69,6 +82,62 @@ func ParseFile(filePath string) (Context, error) {
 		ctx.parseGenDecl(spec)
 	}
 
+	for _, comm := range node.Comments {
+		txt := comm.Text()
+		if idx := strings.Index(txt, "@enum"); idx != -1 {
+			txt = txt[idx+6:]
+			enumEnd := strings.Index(txt, "::")
+
+			if enumEnd == -1 {
+				continue
+			}
+
+			enumName := txt[:enumEnd]
+			if enumName == "" {
+				continue
+			}
+
+			txt = strings.TrimSpace(txt[enumEnd+2:])
+
+			fields := []EnumField{}
+
+			for {
+				fld := strings.Index(txt, "->")
+
+				if fld == -1 {
+					break
+				}
+
+				txt = strings.TrimSpace(txt[fld+2:])
+				comma := strings.Index(txt, ",")
+				semicolon := strings.Index(txt, ";")
+
+				if comma == -1 || comma > semicolon {
+					val := txt[:semicolon]
+					txt = strings.TrimSpace(txt[semicolon+1:])
+					fields = append(fields, EnumField{
+						Value: val,
+					})
+				} else if comma != -1 && comma < semicolon {
+					val := txt[:comma]
+					doc := txt[comma+1 : semicolon]
+					txt = strings.TrimSpace(txt[semicolon+1:])
+					fields = append(fields, EnumField{
+						Value:     val,
+						DocString: doc,
+					})
+				} else {
+					break
+				}
+			}
+
+			ctx.Enums = append(ctx.Enums, Enum{
+				Name:   enumName,
+				Fields: fields,
+			})
+		}
+	}
+
 	return ctx, nil
 }
 
@@ -83,15 +152,19 @@ func (ctx *Context) parseGenDecl(decl *ast.GenDecl) {
 	}
 
 	name := spec.Name.Name
+	doc := ""
+	if spec.Comment != nil {
+		doc = spec.Comment.Text()
+	}
 
 	specVal, ok := spec.Type.(*ast.StructType)
 	if ok {
-		ctx.parseSpec(name, specVal)
+		ctx.parseSpec(name, doc, specVal)
 		return
 	}
 }
 
-func (ctx *Context) parseSpec(name string, specVal *ast.StructType) {
+func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 	//spew.Dump(specVal)
 	if specVal.Fields.NumFields() < 1 {
 		fmt.Printf("Spec %s has no fields specified!\n", name)
@@ -100,8 +173,9 @@ func (ctx *Context) parseSpec(name string, specVal *ast.StructType) {
 	}
 
 	spec := Spec{
-		Name:   name,
-		Fields: []Field{},
+		Name:      name,
+		Fields:    []Field{},
+		DocString: doc,
 	}
 
 	for _, v := range specVal.Fields.List {

@@ -1,5 +1,13 @@
 package foobar
 
+/*
+	@enum ModelTypeEnum::
+		-> Standard = 1, Standard mesh type;
+		-> SingleMesh = 4, Mesh consisting of bones and skin data;
+		-> Morph;
+		-> Sector, Holds objects;
+*/
+
 type Header struct {
 	Magic           [4]int8 /* @plain Has to be 'PACK' */
 	DirectoryOffset int32   /* Offset to the directory */
@@ -12,8 +20,7 @@ type Directory struct {
 	FileLength   int32
 }
 
-/* Random Model structure */
-type Model struct {
+type Model struct { /* Random Model structure */
 	ModelType      uint32      /* Model type */
 	FaceGroupCount uint16      /* Number of face groups */
 	FaceGroups     []FaceGroup /* model's face groups */

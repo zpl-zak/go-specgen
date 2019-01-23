@@ -3,6 +3,14 @@
 #include <stdio.h>
 
 
+typedef enum {
+	Standard = 1, // Standard mesh type
+	SingleMesh = 4, // Mesh consisting of bones and skin data
+	Morph,
+	Sector // Holds objects
+} ModelTypeEnum;
+
+
 typedef struct tagHEADER {
 	int8_t Magic[4]; /* @plain Has to be 'PACK' */
 	int32_t DirectoryOffset; /* Offset to the directory */

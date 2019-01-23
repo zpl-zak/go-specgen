@@ -39,8 +39,29 @@ func (ctx *Context) ExportC() {
 
 	fmt.Println("")
 
+	// Output enums
+	for _, enum := range ctx.Enums {
+		fmt.Printf("typedef enum {\n")
+		for i, field := range enum.Fields {
+			if field.DocString != "" {
+				field.DocString = " //" + field.DocString
+			}
+			if i != len(enum.Fields)-1 {
+				fmt.Printf("\t%s,%s\n", field.Value, field.DocString)
+			} else {
+				fmt.Printf("\t%s%s\n", field.Value, field.DocString)
+			}
+		}
+		fmt.Printf("} %s;\n\n", enum.Name)
+	}
+
+	fmt.Println("")
+
 	// Output specifications
 	for _, spec := range specs {
+		if spec.DocString != "" {
+			fmt.Printf("/* %s */", strings.TrimSpace(spec.DocString))
+		}
 		fmt.Printf("typedef struct tag%s {\n", strings.ToUpper(spec.Name))
 		{
 			for _, field := range spec.Fields {

@@ -10,7 +10,7 @@ It uses Go semantics (see `drafts/foo.gspec`) and currently generates the specif
 ## Things to do
 - Improve error handling
 - Add more languages/formats
-- Implement enum types
+- ~~Implement enum types~~ (done)
 
 ## How to use
 

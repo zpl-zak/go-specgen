@@ -23,8 +23,21 @@ import (
 
 // ExportMD exports the data into a Markdown table format
 func (ctx *Context) ExportMD() {
+	for _, enum := range ctx.Enums {
+		fmt.Printf("## Enum: %s\n\n", enum.Name)
+
+		fmt.Println("| Value | Description |")
+		fmt.Println("| ----- | ----------- |")
+
+		for _, field := range enum.Fields {
+			fmt.Printf("| %s | %s |\n", field.Value, field.DocString)
+		}
+	}
+
+	fmt.Println("")
+
 	for _, spec := range ctx.Specs {
-		fmt.Printf("## %s\n\n", spec.Name)
+		fmt.Printf("## Spec: %s\n\n", spec.Name)
 
 		fmt.Println("| Type | Name | Description |")
 		fmt.Println("| ---- | ---- | ----------- |")
