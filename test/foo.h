@@ -3,18 +3,27 @@
 #include <stdio.h>
 
 
-typedef struct tagSPAMEGGS {
-	float A;
-	float B;
-} SpamEggs;
+typedef struct tagHEADER {
+	int8_t Magic[4]; /* @plain Has to be 'PACK' */
+	int32_t DirectoryOffset; /* Offset to the directory */
+	int32_t DirectoryLength; /* Directory length */
+} Header;
 
-typedef struct tagFOO {
-	int32_t Bar;
-	SpamEggs* Eggs;
-} Foo;
+typedef struct tagDIRECTORY {
+	int8_t FileName[56]; /* @string Archived file name */
+	int32_t FilePosition;
+	int32_t FileLength;
+} Directory;
 
-typedef struct tagFOOBAR {
-	Foo A;
-	int8_t B[32]; /* Model name */
-} FooBar;
+typedef struct tagFACEGROUP {
+	int32_t MaterialID; /* -1 for default */
+	uint16_t FaceCount;
+	int64_t* Faces; /* @plain */
+} FaceGroup;
+
+typedef struct tagMODEL {
+	uint32_t ModelType; /* Model type */
+	uint16_t FaceGroupCount; /* Number of face groups */
+	FaceGroup* FaceGroups; /* model's face groups */
+} Model;
 

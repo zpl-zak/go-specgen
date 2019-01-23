@@ -1,15 +1,26 @@
 package foobar
 
-type FooBar struct {
-	A Foo
-	B [32]int8 /* Model name */
+type Header struct {
+	Magic           [4]int8 /* @plain Has to be 'PACK' */
+	DirectoryOffset int32   /* Offset to the directory */
+	DirectoryLength int32   /* Directory length */
 }
 
-type Foo struct {
-	Bar  int32
-	Eggs ptrSpamEggs
+type Directory struct {
+	FileName     [56]int8 /* @string Archived file name */
+	FilePosition int32
+	FileLength   int32
 }
 
-type SpamEggs struct {
-	A, B float32
+/* Random Model structure */
+type Model struct {
+	ModelType      uint32      /* Model type */
+	FaceGroupCount uint16      /* Number of face groups */
+	FaceGroups     []FaceGroup /* model's face groups */
+}
+
+type FaceGroup struct {
+	MaterialID int32 /* -1 for default */
+	FaceCount  uint16
+	Faces      []int64 /* @plain */
 }
