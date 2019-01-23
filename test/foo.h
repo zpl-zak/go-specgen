@@ -10,6 +10,26 @@ typedef enum {
 	Sector // Holds objects
 } ModelTypeEnum;
 
+typedef enum {
+	MATERIALFLAG_TEXTUREDIFFUSE = 0x00040000, // whether diffuse texture is present
+	MATERIALFLAG_COLORED = 0x08000000, // whether to use diffuse color (only applies with diffuse texture)
+	MATERIALFLAG_MIPMAPPING = 0x00800000,
+	MATERIALFLAG_ANIMATEDTEXTUREDIFFUSE = 0x04000000,
+	MATERIALFLAG_ANIMATEXTEXTUREALPHA = 0x02000000,
+	MATERIALFLAG_DOUBLESIDEDMATERIAL = 0x10000000, // whether backface culling should be off
+	MATERIALFLAG_ENVIRONMENTMAP = 0x00080000, // simulates glossy material with environment texture
+	MATERIALFLAG_NORMALTEXTUREBLEND = 0x00000100, // blend between diffuse and environment texture normally
+	MATERIALFLAG_MULTIPLYTEXTUREBLEND = 0x00000200, // blend between diffuse and environment texture by multiplying
+	MATERIALFLAG_ADDITIVETEXTUREBLEND = 0x00000400, // blend between diffuse and environment texture by addition
+	MATERIALFLAG_CALCREFLECTTEXTUREY = 0x00001000,
+	MATERIALFLAG_PROJECTREFLECTTEXTUREY = 0x00002000,
+	MATERIALFLAG_PROJECTREFLECTTEXTUREZ = 0x00004000,
+	MATERIALFLAG_ADDITIONALEFFECT = 0x00008000, // should be ALPHATEXTURE | COLORKEY | ADDITIVEMIXING
+	MATERIALFLAG_ALPHATEXTURE = 0x40000000,
+	MATERIALFLAG_COLORKEY = 0x20000000,
+	MATERIALFLAG_ADDITIVEMIXING = 0x80000000 // the object is blended against the world by adding RGB (see street lamps etc.)
+} MaterialFlags;
+
 
 typedef struct tagHEADER {
 	int8_t Magic[4]; /* @plain Has to be 'PACK' */

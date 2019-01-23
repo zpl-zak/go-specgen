@@ -8,6 +8,27 @@ package foobar
 		-> Sector, Holds objects;
 */
 
+/*
+	@enum MaterialFlags::
+		->TEXTUREDIFFUSE = 0x00040000, whether diffuse texture is present;
+		->COLORED = 0x08000000, whether to use diffuse color (only applies with diffuse texture);
+		->MIPMAPPING = 0x00800000;
+		->ANIMATEDTEXTUREDIFFUSE = 0x04000000;
+		->ANIMATEXTEXTUREALPHA = 0x02000000;
+		->DOUBLESIDEDMATERIAL = 0x10000000, whether backface culling should be off;
+		->ENVIRONMENTMAP = 0x00080000, simulates glossy material with environment texture;
+		->NORMALTEXTUREBLEND = 0x00000100, blend between diffuse and environment texture normally;
+		->MULTIPLYTEXTUREBLEND = 0x00000200, blend between diffuse and environment texture by multiplying;
+		->ADDITIVETEXTUREBLEND = 0x00000400, blend between diffuse and environment texture by addition;
+		->CALCREFLECTTEXTUREY = 0x00001000;
+		->PROJECTREFLECTTEXTUREY = 0x00002000;
+		->PROJECTREFLECTTEXTUREZ = 0x00004000;
+		->ADDITIONALEFFECT = 0x00008000, should be ALPHATEXTURE | COLORKEY | ADDITIVEMIXING;
+		->ALPHATEXTURE = 0x40000000;
+		->COLORKEY = 0x20000000;
+		->ADDITIVEMIXING = 0x80000000, the object is blended against the world by adding RGB (see street lamps etc.);
+*/
+
 type Header struct {
 	Magic           [4]int8 /* @plain Has to be 'PACK' */
 	DirectoryOffset int32   /* Offset to the directory */
