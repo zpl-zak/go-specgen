@@ -1,0 +1,15 @@
+package foobar
+
+type FooBar struct {
+	A Foo
+	B [32]int8 /* Model name */
+}
+
+type Foo struct {
+	Bar  int32
+	Eggs ptrSpamEggs
+}
+
+type SpamEggs struct {
+	A, B float32
+}

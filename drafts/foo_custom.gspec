@@ -1,0 +1,39 @@
+format Foobar;
+
+type Foo int32;
+type Bar int8;
+
+struct FooBar {
+    A :: Foo,
+    B :: [32]Foo,
+};
+
+impl Read for FooBar /* GlobalReader */ {
+    var data FooBar;
+
+    log(GlobalReader.SeekPosition);
+    seek(0, START);
+    readValue(data.A);
+    readSize(data.B, sizeof(data.B)*32); // or
+    readArray(data.B, 32);
+    return data;
+}
+
+// or
+
+impl Read for FooBar /* GlobalReader, FooBarData exploded */ {
+    log(GlobalReader.SeekPosition);
+    seek(0, START);
+    readValue(::A);
+    readSize(::B, sizeof(::B)*32); // or
+    readArray(::B, 32);
+    return ::;
+}
+
+// writer
+
+impl Write for FooBar /* GlobalWriter, FooBarData exploded */ {
+    log(::A);
+    writeValue(::A);
+    writeArray(::B);
+}
