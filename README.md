@@ -2,12 +2,12 @@
 
 Go specgen is a minimalistic library for generating format specification into various languages.
 
-It uses Go semantics (see drafts/foo.gspec) and currently generates the specifications to the following formats:
+It uses Go semantics (see `drafts/foo.gspec`) and currently generates the specifications to the following formats:
 - JSON
 - C99
 - Markdown table
 
-Things to do:
+## Things to do
 - Improve error handling
 - Add more languages/formats
 - Implement enum types
