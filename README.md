@@ -8,9 +8,9 @@ It uses Go semantics (see `drafts/foo.gspec`) and currently generates the specif
 - Markdown table
 
 ## Things to do
-- Improve error handling
-- Add more languages/formats
-- ~~Implement enum types~~ (done)
+[ ] Improve error handling
+[ ] Add more languages/formats
+[x] Implement enum types
 
 ## How to use
 
