@@ -55,8 +55,9 @@ type Spec struct {
 
 // Context contains all processed specs
 type Context struct {
-	Specs []Spec `json:"specs"`
-	Enums []Enum `json:"enums"`
+	FormatName string `json:"format"`
+	Specs      []Spec `json:"specs"`
+	Enums      []Enum `json:"enums"`
 }
 
 // ParseFile processes the provided gspec file
@@ -73,6 +74,8 @@ func ParseFile(filePath string) (Context, error) {
 		fmt.Printf("Error parsing .gspec file: %v\n", err)
 		return Context{}, fmt.Errorf("could not parse file: %v", err)
 	}
+
+	ctx.FormatName = node.Name.Name
 
 	for _, decl := range node.Decls {
 		spec, ok := decl.(*ast.GenDecl)
@@ -211,8 +214,7 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 			comment = v.Comment.Text()
 		}
 
-		if strings.Contains(typeName, "ptr") {
-			typeName = strings.Replace(typeName, "ptr", "", -1)
+		if strings.Contains(comment, "@ptr") {
 			isPtr = true
 		}
 

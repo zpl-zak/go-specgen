@@ -54,6 +54,8 @@ func main() {
 		ctx.ExportC()
 	case "md":
 		ctx.ExportMD()
+	case "go":
+		ctx.ExportGo()
 	case "dump":
 		spew.Dump(ctx)
 

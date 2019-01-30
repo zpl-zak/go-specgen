@@ -28,7 +28,6 @@ func retrieveSortedSpecs(specs []Spec) (out []Spec) {
 		out = append(out, spec)
 	}
 
-	//spew.Dump(out)
 	return out
 }
 

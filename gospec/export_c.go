@@ -30,9 +30,6 @@ const (
 func (ctx *Context) ExportC() {
 	// Output required includes
 	fmt.Print(stdIncludes)
-	/* for _, x := range ctx.Specs {
-		fmt.Printf("struct %s;\n", x.Name)
-	} */
 
 	// Sort specs based on dependency graph
 	specs := retrieveSortedSpecs(ctx.Specs)
@@ -121,7 +118,6 @@ func convSpecTypeToCType(ctx *Context, typeName string) string {
 
 	for _, v := range ctx.Specs {
 		if v.Name == typeName {
-			//return fmt.Sprintf("struct tag%s", strings.ToUpper(typeName))
 			return fmt.Sprintf("%s", typeName)
 		}
 	}
