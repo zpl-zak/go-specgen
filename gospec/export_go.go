@@ -56,17 +56,31 @@ func dumpField(field Field) {
 
 	if field.IsPointer {
 		fmt.Print("*")
-	} else if field.IsArray && field.ArrayLen == 0 {
-		fmt.Print("[]")
-	} else if field.IsArray && field.ArrayLen > 0 {
-		fmt.Printf("[%d]", field.ArrayLen)
+	} else if field.IsArray {
+		dumpArrayGo(field, field)
 	}
 
-	fmt.Printf("%s ", field.Type)
+	if field.InnerArray == nil {
+		fmt.Printf("%s ", field.Type)
+	}
 
 	if field.DocString != "" {
 		fmt.Printf(" /* %s */", strings.TrimSpace(field.DocString))
 	}
 
 	fmt.Println("")
+}
+
+func dumpArrayGo(field, orig Field) {
+	if field.ArrayLen == 0 {
+		fmt.Print("[]")
+	} else if field.ArrayLen > 0 {
+		fmt.Printf("[%d]", field.ArrayLen)
+	}
+
+	if field.InnerArray != nil {
+		dumpArrayGo(*field.InnerArray, field)
+	} else if orig != field {
+		fmt.Printf("%s ", field.Type)
+	}
 }

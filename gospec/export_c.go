@@ -62,10 +62,16 @@ func (ctx *Context) ExportC() {
 		fmt.Printf("typedef struct tag%s {\n", strings.ToUpper(spec.Name))
 		{
 			for _, field := range spec.Fields {
-				fmt.Printf("\t%s%s %s", convSpecTypeToCType(ctx, field.Type), retStarIfPtr(field), field.Name)
+				tp := findBaseType(field)
+				fmt.Printf("\t%s%s %s", convSpecTypeToCType(ctx, tp), retStarIfPtr(field), field.Name)
 
 				if field.IsArray && field.ArrayLen != 0 {
-					fmt.Printf("[%d]", field.ArrayLen)
+					fld := &field
+
+					for fld != nil {
+						fmt.Printf("[%d]", fld.ArrayLen)
+						fld = fld.InnerArray
+					}
 				}
 
 				fmt.Print(";")

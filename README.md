@@ -4,7 +4,7 @@ Go specgen is a minimalistic library for generating format specification into va
 
 It uses Go semantics (see `drafts/foo.gspec`) and currently generates the specifications to various formats.
 
-## Things to do
+## Features / Things to do
 - Add more languages/formats
     - [x] C/C++
     - [X] Go
@@ -14,6 +14,7 @@ It uses Go semantics (see `drafts/foo.gspec`) and currently generates the specif
     - [ ] Rust
     - [ ] C#
     - [ ] Java
+- [x] k-d array support
 - [x] Improve error handling
 - [x] Implement enum types
 

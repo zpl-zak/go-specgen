@@ -48,3 +48,11 @@ func resolveDeps(specs []Spec, out *[]Spec, spec, orig Spec) {
 		}
 	}
 }
+
+func findBaseType(field Field) string {
+	if field.InnerArray == nil {
+		return field.Type
+	}
+
+	return findBaseType(*field.InnerArray)
+}

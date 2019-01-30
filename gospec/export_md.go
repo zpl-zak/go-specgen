@@ -57,6 +57,17 @@ func dumpSpecials(field *Field) string {
 			lenName = "N"
 		}
 
+		fld := field.InnerArray
+		for fld != nil {
+			subLenName := strconv.Itoa(int(fld.ArrayLen))
+			if subLenName == "0" {
+				subLenName = "N"
+			}
+
+			lenName = lenName + "x" + subLenName
+			fld = fld.InnerArray
+		}
+
 		singName := inflection.Singular(field.Name)
 
 		if strings.Contains(field.DocString, "@string") {
@@ -76,9 +87,11 @@ func dumpSpecials(field *Field) string {
 }
 
 func dumpType(field Field) string {
+	tp := findBaseType(field)
+
 	if field.IsPointer {
-		return fmt.Sprintf("%s*", field.Type)
+		return fmt.Sprintf("%s*", tp)
 	}
 
-	return field.Type
+	return tp
 }

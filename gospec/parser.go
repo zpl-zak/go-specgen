@@ -25,12 +25,13 @@ import (
 
 // Field describes the data inside of spec
 type Field struct {
-	Name      string `json:"name"`
-	Type      string `json:"type"`
-	IsArray   bool   `json:"is_array"`
-	IsPointer bool   `json:"is_ptr"`
-	ArrayLen  uint   `json:"len"`
-	DocString string `json:"_doc"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	IsArray    bool   `json:"is_array"`
+	IsPointer  bool   `json:"is_ptr"`
+	ArrayLen   uint   `json:"len"`
+	InnerArray *Field `json:"inner"`
+	DocString  string `json:"_doc"`
 }
 
 // EnumField describes enum value
@@ -186,29 +187,15 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 		var isArray, isPtr bool
 		var arrayLen uint
 		var comment string
+		var innerArray *Field
 		typeVal, ok := v.Type.(*ast.Ident)
 		if ok {
 			typeName = typeVal.Name
 		}
+
 		arrayVal, ok := v.Type.(*ast.ArrayType)
 		if ok {
-			eltype, ok := arrayVal.Elt.(*ast.Ident)
-			// TODO: Support N+1D arrays
-			if !ok {
-				fmt.Fprintf(os.Stderr, "Field %s in spec %s at %d can't be array of arrays!\n", v.Names[0].Name, name, arrayVal.Pos())
-				os.Exit(2)
-				return
-			}
-			typeName = eltype.Name
-
-			lenVal, ok := arrayVal.Len.(*ast.BasicLit)
-			if !ok {
-				arrayLen = 0
-			} else {
-				lenConv, _ := strconv.Atoi(lenVal.Value)
-				arrayLen = uint(lenConv)
-			}
-			isArray = true
+			typeName, isArray, arrayLen, innerArray = populateArray(arrayVal)
 		}
 
 		if v.Comment != nil {
@@ -221,12 +208,13 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 
 		for _, name := range v.Names {
 			field := Field{
-				Name:      name.Name,
-				Type:      typeName,
-				IsArray:   isArray,
-				IsPointer: isPtr,
-				ArrayLen:  arrayLen,
-				DocString: comment,
+				Name:       name.Name,
+				Type:       typeName,
+				IsArray:    isArray,
+				IsPointer:  isPtr,
+				ArrayLen:   arrayLen,
+				InnerArray: innerArray,
+				DocString:  comment,
 			}
 
 			spec.Fields = append(spec.Fields, field)
@@ -234,4 +222,60 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 	}
 
 	ctx.Specs = append(ctx.Specs, spec)
+}
+
+func populateArray(arrayVal *ast.ArrayType) (string, bool, uint, *Field) {
+	var arrayLen uint
+	var inf *Field
+	eltype, ok := arrayVal.Elt.(*ast.Ident)
+	if !ok {
+		aval := arrayVal
+		inp := &inf
+		var inprev *Field
+		for aval != nil {
+			inn, ok := aval.Elt.(*ast.ArrayType)
+
+			if ok {
+				tpName, _, innLen, ch := populateArray(inn)
+
+				if tpName == "<end>" {
+					break
+				}
+
+				*inp = &Field{
+					Name:     "<child>",
+					Type:     tpName,
+					IsArray:  true,
+					ArrayLen: innLen,
+				}
+
+				if inprev != nil {
+					inprev.InnerArray = *inp
+				}
+
+				aval = inn
+				inprev = *inp
+				inp = &ch
+			} else {
+				break
+			}
+		}
+	}
+
+	lenVal, ok := arrayVal.Len.(*ast.BasicLit)
+	if !ok {
+		arrayLen = 0
+	} else {
+		lenConv, _ := strconv.Atoi(lenVal.Value)
+		arrayLen = uint(lenConv)
+	}
+
+	var name string
+	if eltype == nil {
+		name = "<array>"
+	} else {
+		name = eltype.Name
+	}
+
+	return name, true, arrayLen, inf
 }
