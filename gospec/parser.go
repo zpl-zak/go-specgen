@@ -124,7 +124,7 @@ func ParseFile(filePath string) (Context, error) {
 					txt = strings.TrimSpace(txt[semicolon+1:])
 					fields = append(fields, EnumField{
 						Value:     val,
-						DocString: doc,
+						DocString: strings.TrimSpace(doc),
 					})
 				} else {
 					break
@@ -175,7 +175,7 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 	spec := Spec{
 		Name:      name,
 		Fields:    []Field{},
-		DocString: doc,
+		DocString: strings.TrimSpace(doc),
 	}
 
 	for _, v := range specVal.Fields.List {
