@@ -28,14 +28,14 @@ func main() {
 	flag.Parse()
 
 	if len(os.Args) < 2 {
-		fmt.Printf("Not enough arguments!\n")
+		fmt.Fprintf(os.Stderr, "Not enough arguments!\n")
 		flag.PrintDefaults()
 		os.Exit(3)
 		return
 	}
 
 	if _, err := os.Stat(*filePath); os.IsNotExist(err) {
-		fmt.Println("File does not exist!")
+		fmt.Fprintln(os.Stderr, "File does not exist!")
 		os.Exit(4)
 		return
 	}
@@ -43,7 +43,7 @@ func main() {
 	ctx, err := gospec.ParseFile(*filePath)
 
 	if err != nil {
-		fmt.Printf("Error: %v", err)
+		fmt.Printf("Error: %v\n", err)
 		return
 	}
 
@@ -60,7 +60,7 @@ func main() {
 		spew.Dump(ctx)
 
 	default:
-		fmt.Printf("Lang mode not supported!\n")
+		fmt.Fprintf(os.Stderr, "Lang mode not supported!\n")
 		os.Exit(5)
 		return
 	}

@@ -43,7 +43,7 @@ type Directory struct {
 
 type Model struct { /* Random Model structure */
 	ModelType          ModelTypeEnum /* Model type */
-	FaceGroupCount     uint16        /* Number of face groups */
+	FaceGroupCount   :  uint16        /* Number of face groups */
 	FaceGroups         []FaceGroup   /* model's face groups */
 	MeshInstanceBuffer int32         /* @ptr */
 }

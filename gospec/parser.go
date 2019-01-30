@@ -71,7 +71,7 @@ func ParseFile(filePath string) (Context, error) {
 	node, err := parser.ParseFile(fstFile, filePath, nil, parser.ParseComments)
 
 	if err != nil {
-		fmt.Printf("Error parsing .gspec file: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error parsing .gspec file: %v\n", err)
 		return Context{}, fmt.Errorf("could not parse file: %v", err)
 	}
 
@@ -170,7 +170,7 @@ func (ctx *Context) parseGenDecl(decl *ast.GenDecl) {
 func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 	//spew.Dump(specVal)
 	if specVal.Fields.NumFields() < 1 {
-		fmt.Printf("Spec %s has no fields specified!\n", name)
+		fmt.Fprintf(os.Stderr, "Spec %s has no fields specified!\n", name)
 		os.Exit(1)
 		return
 	}
@@ -193,8 +193,9 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 		arrayVal, ok := v.Type.(*ast.ArrayType)
 		if ok {
 			eltype, ok := arrayVal.Elt.(*ast.Ident)
+			// TODO: Support N+1D arrays
 			if !ok {
-				fmt.Printf("Field %s in spec %s at %d can't be array of arrays!\n", v.Names[0].Name, name, arrayVal.Pos())
+				fmt.Fprintf(os.Stderr, "Field %s in spec %s at %d can't be array of arrays!\n", v.Names[0].Name, name, arrayVal.Pos())
 				os.Exit(2)
 				return
 			}

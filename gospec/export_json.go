@@ -15,6 +15,7 @@ package gospec
 
 import (
 	"fmt"
+	"os"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -23,7 +24,7 @@ import (
 func (ctx *Context) ExportJSON() {
 	data, err := jsoniter.MarshalToString(*ctx)
 	if err != nil {
-		fmt.Println(err)
+		os.Stderr.WriteString(err.Error())
 		return
 	}
 

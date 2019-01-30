@@ -15,6 +15,7 @@ package gospec
 
 import (
 	"fmt"
+	"os"
 )
 
 func retrieveSortedSpecs(specs []Spec) (out []Spec) {
@@ -36,7 +37,7 @@ func resolveDeps(specs []Spec, out *[]Spec, spec, orig Spec) {
 		for i, dep := range specs {
 			if field.Type == dep.Name {
 				if dep.Name == orig.Name {
-					fmt.Printf("Error: Cyclic dependency used for field %s in spec %s!\n", field.Name, spec.Name)
+					fmt.Fprintf(os.Stderr, "Error: Cyclic dependency used for field %s in spec %s!\n", field.Name, spec.Name)
 					return
 				}
 
