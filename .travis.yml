@@ -1,0 +1,23 @@
+sudo: false
+language: go
+env:
+- GO111MODULE=on
+go:
+- 1.11.x
+git:
+  depth: 1
+notifications:
+  email: false
+before_script:
+- go get .
+script:
+- mkdir build
+- go build -o build/specgen
+deploy:
+  provider: releases
+  api_key:
+    secure: jS0aD8bNjJ639fH/r3yAYQm5596SRnCoWiTrl/mRgFhlCseBdT0i4eVJJE9xSuVQkBhnAtBUFUysN5rhdeLGkZSCtIYu1RfZrDDcMKWxbN1b7IJL1CSsLWUhFBxVnDzgt0jeMpXD3CRJFs6oHQkjDViMXADSbWMfReMtOUFWIvDP6fnYKit3eYBXH5gLeXa6GBgWbecM83ZbIEnV3BrfdlkQE4xOlhIqdAskBDmT5w3GK3Z63bkt/Eai+ElXN1bMTKImiUp7WJxOMIVUhIvDgxtV63w0OyjAWlA6km07j8m+2qGI97SZ9Xt5cWe9PYRg5llbM2QViWeIaX91slZHdYasRvWXGtWVEbXO4jIEYiOJ+BwyI9rq7Gmx2DBx9E8DDLXdHYqk8ZEHB0nLUV2JA+JdAiU4EhwLjygiEI/0UyW18wL8GkFXb6OgHK7QeYK+G9uMxgivq2Ih1+rYInZR0RmFiYbzW5gLUnO/SYK/7CzktesTf+oJu1N5lx6CGv1Dv0Z+vQA3QqObuMqlUt2Wqy5ICqS6jXLMVlPPCUPlWTavOs12RAdsG/wj1T8bHcRXVZOzttcfyvclqGqb32rZJZS0Bb7g90HVNvGvoJsXgerTaPZWeJulehA2Uu1AhJH7DW35c4JT48b0Oh2CCMF847IEQQ5HzCpfPgr6A9b38+U=
+  file: build/specgen
+  on:
+    tags: true
+

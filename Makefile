@@ -1,6 +1,9 @@
 all:
 	go build -o build/specgen
 
+win:
+	GOOS=windows GOARCH=amd64 go build -o build/specgen.exe
+
 install:
 	go build -i -o build/specgen && cp build/specgen ${HOME}/go/bin/
 
