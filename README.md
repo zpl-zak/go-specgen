@@ -34,13 +34,39 @@ such as
 specgen --file=drafts/foo.gspec --lang=c
 ```
 
-which will print out the output to the stdout stream. For instance, you could pipe the output of Go lang into `gofmt` to get nicely formatted Go source code:
+which will print out the output to the stdout stream. 
+
+For instance, you could pipe the output of Go lang into `gofmt` to get nicely formatted Go source code:
 ```sh
 specgen --file=drafts/foo.gspec --lang=go | gofmt
 ```
 
 ### Usage: Library
-You can also use go-specgen as a library, see `main.go` for an example usage.
+You can also use go-specgen as a library, for instance:
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/zaklaus/go-specgen/gospec"
+)
+
+func main() {
+    // Parse the gspec file containing data specifications
+	ctx, err := gospec.ParseFile("drafts/foo.gspec")
+
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+    // Export it to Markdown tables
+	ctx.ExportMD()
+}
+```
+
+You can also look at `main.go` itself.
 
 ## License
 
