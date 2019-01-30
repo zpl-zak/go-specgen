@@ -272,7 +272,7 @@ func populateArray(arrayVal *ast.ArrayType) (string, bool, uint, *Field) {
 
 	var name string
 	if eltype == nil {
-		name = "<array>"
+		name = "<inferred>"
 	} else {
 		name = eltype.Name
 	}
