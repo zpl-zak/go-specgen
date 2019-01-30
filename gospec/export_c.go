@@ -41,12 +41,12 @@ func (ctx *Context) ExportC() {
 		fmt.Printf("typedef enum {\n")
 		for i, field := range enum.Fields {
 			if field.DocString != "" {
-				field.DocString = " //" + field.DocString
+				fmt.Printf("\n/* %s */\n", strings.TrimSpace(field.DocString))
 			}
 			if i != len(enum.Fields)-1 {
-				fmt.Printf("\t%s,%s\n", field.Value, field.DocString)
+				fmt.Printf("\t%s,\n", field.Value)
 			} else {
-				fmt.Printf("\t%s%s\n", field.Value, field.DocString)
+				fmt.Printf("\t%s\n", field.Value)
 			}
 		}
 		fmt.Printf("} %s;\n\n", enum.Name)

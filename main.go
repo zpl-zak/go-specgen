@@ -23,7 +23,7 @@ import (
 )
 
 func main() {
-	filePath := flag.String("file", "test.gspec", "gspec file to generate from")
+	filePath := flag.String("file", "", "gspec file to generate from")
 	langMode := flag.String("lang", "json", "language mode to use")
 	flag.Parse()
 
