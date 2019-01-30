@@ -47,22 +47,22 @@ You can also use go-specgen as a library, for instance:
 package main
 
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/zaklaus/go-specgen/gospec"
+    "github.com/zaklaus/go-specgen/gospec"
 )
 
 func main() {
     // Parse the gspec file containing data specifications
-	ctx, err := gospec.ParseFile("drafts/foo.gspec")
+    ctx, err := gospec.ParseFile("drafts/foo.gspec")
 
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
+    if err != nil {
+        fmt.Printf("Error: %v\n", err)
+        return
+    }
 
     // Export it to Markdown tables
-	ctx.ExportMD()
+    ctx.ExportMD()
 }
 ```
 
