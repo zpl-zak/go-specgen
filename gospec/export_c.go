@@ -30,6 +30,7 @@ const (
 func (ctx *Context) ExportC() {
 	// Output required includes
 	fmt.Print(stdIncludes)
+	fmt.Printf("/* Format name: %s */\n\n", ctx.FormatName)
 
 	// Sort specs based on dependency graph
 	specs := retrieveSortedSpecs(ctx.Specs)
