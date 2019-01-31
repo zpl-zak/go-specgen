@@ -2,7 +2,7 @@
 
 Go specgen is a minimalistic library for generating format specification into various languages.
 
-It uses Go semantics (see `drafts/foo.gspec`) and currently generates the specifications to various formats.
+It uses Go semantics (see `drafts/foo.gspec.go`) and currently generates the specifications to various formats.
 
 ## Features / Things to do
 - Add more languages/formats
@@ -40,7 +40,7 @@ which will print out the output to the stdout stream.
 
 For instance, you could pipe the output of Go lang into `gofmt` to get nicely formatted Go source code:
 ```sh
-specgen --file=drafts/foo.gspec --lang=go | gofmt
+specgen --file=drafts/foo.gspec.go --lang=go | gofmt
 ```
 
 ### Usage: Library
@@ -56,7 +56,7 @@ import (
 
 func main() {
     // Parse the gspec file containing data specifications
-    ctx, err := gospec.ParseFile("drafts/foo.gspec")
+    ctx, err := gospec.ParseFile("drafts/foo.gspec.go")
 
     if err != nil {
         fmt.Printf("Error: %v\n", err)
