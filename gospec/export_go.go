@@ -14,6 +14,7 @@
 package gospec
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 )
@@ -64,6 +65,18 @@ func dumpField(field Field) {
 		fmt.Printf("%s ", field.Type)
 	}
 
+	if len(field.Tags) > 0 {
+		var buf bytes.Buffer
+		for _, tag := range field.Tags {
+			buf.WriteString(fmt.Sprintf("%s:\"%s\" ",
+				tag.Name,
+				strings.TrimSuffix(strings.Join(tag.Values, ","), ","),
+			))
+		}
+
+		fmt.Printf(" `%s` ", strings.TrimSpace(buf.String()))
+	}
+
 	if field.DocString != "" {
 		fmt.Printf(" /* %s */", strings.TrimSpace(field.DocString))
 	}
@@ -80,7 +93,7 @@ func dumpArrayGo(field, orig Field) {
 
 	if field.InnerArray != nil {
 		dumpArrayGo(*field.InnerArray, field)
-	} else if orig != field {
+	} else if orig.Name != field.Name {
 		fmt.Printf("%s ", field.Type)
 	}
 }

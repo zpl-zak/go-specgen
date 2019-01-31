@@ -70,13 +70,11 @@ func dumpSpecials(field *Field) string {
 
 		singName := inflection.Singular(field.Name)
 
-		if strings.Contains(field.DocString, "@string") {
-			field.DocString = strings.Replace(field.DocString, "@string", "", -1)
+		if HasTag(field, "spec", "string") {
 			return fmt.Sprintf("String consisting of %s characters; ", lenName)
 		}
 
-		if strings.Contains(field.DocString, "@plain") {
-			field.DocString = strings.Replace(field.DocString, "@plain", "", -1)
+		if HasTag(field, "spec", "plain") {
 			return fmt.Sprintf("plain array of %s elements; ", lenName)
 		}
 

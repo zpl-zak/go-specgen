@@ -30,14 +30,14 @@ package foobar
 */
 
 type Header struct {
-	Magic           [4]int8 /* @plain Has to be 'PACK' */
+	Magic           [4]int8 `spec:"plain"` /* Has to be 'PACK' */
 	DirectoryOffset int32   /* Offset to the directory */
 	DirectoryLength int32   /* Directory length */
 }
 
 type Directory struct {
-	FileName     [56]int8 /* @string Archived file name */
-	FilePosition int32
+	FileName     [56]int8 `spec:"string"` /* Archived file name */
+	FilePosition int32    `json:"pos" spec:"cool"`
 	FileLength   int32
 }
 
@@ -45,7 +45,7 @@ type Model struct { /* Random Model structure */
 	ModelType          ModelTypeEnum /* Model type */
 	FaceGroupCount     uint16        /* Number of face groups */
 	FaceGroups         []FaceGroup   /* model's face groups */
-	MeshInstanceBuffer int32         /* @ptr */
+	MeshInstanceBuffer int32         `spec:"ptr"`
 	TransformMatrix    [4][4]float32
 	WorldMatrices      [12][16][16][4][32]uint8
 }
@@ -53,5 +53,5 @@ type Model struct { /* Random Model structure */
 type FaceGroup struct {
 	MaterialID int32 /* -1 for default */
 	FaceCount  uint16
-	Faces      []int64 /* @plain */
+	Faces      []int64 `spec:"plain"`
 }

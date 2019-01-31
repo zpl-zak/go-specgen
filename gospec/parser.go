@@ -31,7 +31,14 @@ type Field struct {
 	IsPointer  bool   `json:"is_ptr"`
 	ArrayLen   uint   `json:"len"`
 	InnerArray *Field `json:"inner"`
+	Tags       []Tag  `json:"tags"`
 	DocString  string `json:"_doc"`
+}
+
+// Tag describes tags decorating the field
+type Tag struct {
+	Name   string   `json:"tag"`
+	Values []string `json:"vals"`
 }
 
 // EnumField describes enum value
@@ -86,61 +93,7 @@ func ParseFile(filePath string) (Context, error) {
 		ctx.parseGenDecl(spec)
 	}
 
-	for _, comm := range node.Comments {
-		txt := comm.Text()
-		if idx := strings.Index(txt, "@enum"); idx != -1 {
-			txt = txt[idx+6:]
-			enumEnd := strings.Index(txt, "::")
-
-			if enumEnd == -1 {
-				continue
-			}
-
-			enumName := txt[:enumEnd]
-			if enumName == "" {
-				continue
-			}
-
-			txt = strings.TrimSpace(txt[enumEnd+2:])
-
-			fields := []EnumField{}
-
-			for {
-				fld := strings.Index(txt, "->")
-
-				if fld == -1 {
-					break
-				}
-
-				txt = strings.TrimSpace(txt[fld+2:])
-				comma := strings.Index(txt, ",")
-				semicolon := strings.Index(txt, ";")
-
-				if comma == -1 || comma > semicolon {
-					val := txt[:semicolon]
-					txt = strings.TrimSpace(txt[semicolon+1:])
-					fields = append(fields, EnumField{
-						Value: val,
-					})
-				} else if comma != -1 && comma < semicolon {
-					val := txt[:comma]
-					doc := txt[comma+1 : semicolon]
-					txt = strings.TrimSpace(txt[semicolon+1:])
-					fields = append(fields, EnumField{
-						Value:     val,
-						DocString: strings.TrimSpace(doc),
-					})
-				} else {
-					break
-				}
-			}
-
-			ctx.Enums = append(ctx.Enums, Enum{
-				Name:   enumName,
-				Fields: fields,
-			})
-		}
-	}
+	ctx.populateEnums(node)
 
 	return ctx, nil
 }
@@ -188,6 +141,7 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 		var arrayLen uint
 		var comment string
 		var innerArray *Field
+		tags := []Tag{}
 		typeVal, ok := v.Type.(*ast.Ident)
 		if ok {
 			typeName = typeVal.Name
@@ -202,7 +156,51 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 			comment = v.Comment.Text()
 		}
 
-		if strings.Contains(comment, "@ptr") {
+		if v.Tag != nil {
+			tag := v.Tag.Value
+
+			if strings.HasPrefix(tag, "`") {
+				tag = strings.TrimSpace(tag[1:])
+
+				if tag[0] != '`' {
+					for tag[0] != '`' {
+						tagNameIndex := strings.IndexAny(tag, ": \t\n\r")
+						tagName := tag[:tagNameIndex]
+						tag = tag[tagNameIndex+1:]
+						tagValues := []string{}
+
+						if tag[0] != '"' {
+							fmt.Fprintf(os.Stderr, "Field has incomplete tags in %s\n", spec.Name)
+							return
+						}
+
+						tag = tag[1:]
+
+						for {
+							valIndex := strings.IndexAny(tag, "\" \t\r\n")
+							val := tag[:valIndex]
+							tagValues = append(tagValues, val)
+							tag = tag[valIndex:]
+
+							if tag[0] == '"' {
+								break
+							} else {
+								tag = tag[1:]
+							}
+						}
+
+						tag = strings.TrimSpace(tag[1:])
+
+						tags = append(tags, Tag{
+							Name:   tagName,
+							Values: tagValues,
+						})
+					}
+				}
+			}
+		}
+
+		if hasTagInner(tags, "spec", "ptr") {
 			isPtr = true
 		}
 
@@ -214,6 +212,7 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 				IsPointer:  isPtr,
 				ArrayLen:   arrayLen,
 				InnerArray: innerArray,
+				Tags:       tags,
 				DocString:  comment,
 			}
 
@@ -222,6 +221,25 @@ func (ctx *Context) parseSpec(name, doc string, specVal *ast.StructType) {
 	}
 
 	ctx.Specs = append(ctx.Specs, spec)
+}
+
+// HasTag checks for a specific tag value presence
+func HasTag(field *Field, tagName, attribute string) bool {
+	return hasTagInner(field.Tags, tagName, attribute)
+}
+
+func hasTagInner(tags []Tag, tagName, attribute string) bool {
+	for _, tag := range tags {
+		if tag.Name == tagName {
+			for _, attr := range tag.Values {
+				if attr == attribute {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }
 
 func populateArray(arrayVal *ast.ArrayType) (string, bool, uint, *Field) {
@@ -278,4 +296,62 @@ func populateArray(arrayVal *ast.ArrayType) (string, bool, uint, *Field) {
 	}
 
 	return name, true, arrayLen, inf
+}
+
+func (ctx *Context) populateEnums(node *ast.File) {
+	for _, comm := range node.Comments {
+		txt := comm.Text()
+		if idx := strings.Index(txt, "@enum"); idx != -1 {
+			txt = txt[idx+6:]
+			enumEnd := strings.Index(txt, "::")
+
+			if enumEnd == -1 {
+				continue
+			}
+
+			enumName := txt[:enumEnd]
+			if enumName == "" {
+				continue
+			}
+
+			txt = strings.TrimSpace(txt[enumEnd+2:])
+
+			fields := []EnumField{}
+
+			for {
+				fld := strings.Index(txt, "->")
+
+				if fld == -1 {
+					break
+				}
+
+				txt = strings.TrimSpace(txt[fld+2:])
+				comma := strings.Index(txt, ",")
+				semicolon := strings.Index(txt, ";")
+
+				if comma == -1 || comma > semicolon {
+					val := txt[:semicolon]
+					txt = strings.TrimSpace(txt[semicolon+1:])
+					fields = append(fields, EnumField{
+						Value: val,
+					})
+				} else if comma != -1 && comma < semicolon {
+					val := txt[:comma]
+					doc := txt[comma+1 : semicolon]
+					txt = strings.TrimSpace(txt[semicolon+1:])
+					fields = append(fields, EnumField{
+						Value:     val,
+						DocString: strings.TrimSpace(doc),
+					})
+				} else {
+					break
+				}
+			}
+
+			ctx.Enums = append(ctx.Enums, Enum{
+				Name:   enumName,
+				Fields: fields,
+			})
+		}
+	}
 }

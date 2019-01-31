@@ -17,6 +17,7 @@ It uses Go semantics (see `drafts/foo.gspec`) and currently generates the specif
 - [x] k-d array support
 - [x] Improve error handling
 - [x] Implement enum types
+- [x] Make use of field tags
 
 ## How to use
 
@@ -32,7 +33,7 @@ specgen --file=<path-to-file> --lang=<lang-mode>
 
 such as 
 ```sh
-specgen --file=drafts/foo.gspec --lang=c
+specgen --file=drafts/foo.gspec.go --lang=c
 ```
 
 which will print out the output to the stdout stream. 
