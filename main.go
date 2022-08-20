@@ -19,7 +19,7 @@ import (
 	"os"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/zaklaus/go-specgen/gospec"
+	"github.com/zpl-zak/go-specgen/gospec"
 )
 
 func main() {

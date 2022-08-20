@@ -21,7 +21,7 @@ It uses Go semantics (see `drafts/foo.gspec.go`) and currently generates the spe
 
 ## How to use
 
-Simply `go get github.com/zaklaus/go-specgen/gospec` or clone the repository.
+Simply `go get github.com/zpl-zak/go-specgen/gospec` or clone the repository.
 
 ### Usage: Tool
 You can compile go-specgen and use it as a tool to generate various outputs easily.
@@ -51,7 +51,7 @@ package main
 import (
     "fmt"
 
-    "github.com/zaklaus/go-specgen/gospec"
+    "github.com/zpl-zak/go-specgen/gospec"
 )
 
 func main() {
